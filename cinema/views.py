@@ -1,12 +1,13 @@
 from rest_framework import viewsets
 
-from cinema.models import Actor, Genre, Movie
+from cinema.models import Actor, Genre, Movie, MovieSession
 from cinema.serializers import (
     ActorSerializer,
     GenreSerializer,
     MovieDetailSerializer,
     MovieListSerializer,
     MovieSerializer,
+    MovieSessionSerializer,
 )
 
 
@@ -35,3 +36,8 @@ class MovieViewSet(viewsets.ModelViewSet):
         if self.action == "list" or self.action == "retrieve":
             return queryset.prefetch_related("actors", "genres")
         return queryset
+
+
+class MovieSessionViewSet(viewsets.ModelViewSet):
+    queryset = MovieSession.objects.all()
+    serializer_class = MovieSessionSerializer
