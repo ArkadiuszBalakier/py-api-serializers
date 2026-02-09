@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from cinema.models import Actor, Genre, Movie
+from cinema.models import Actor, CinemaHall, Genre, Movie, MovieSession
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -21,6 +21,7 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = ("id", "title", "description", "duration", "genres", "actors")
+        read_only_fields = ("id",)
 
 
 class MovieListSerializer(serializers.ModelSerializer):
@@ -54,4 +55,60 @@ class MovieDetailSerializer(serializers.ModelSerializer):
             "duration",
             "genres",
             "actors",
+        )
+
+
+class CinemaHallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CinemaHall
+        fields = (
+            "id",
+            "name",
+            "rows",
+            "seats_in_row",
+            "capacity",
+        )
+
+
+class MovieSessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovieSession
+        fields = (
+            "id",
+            "show_time",
+            "movie",
+            "cinema_hall",
+        )
+        read_only_fields = ("id",)
+
+
+class MovieSessionListSerializer(serializers.ModelSerializer):
+    movie_title = serializers.CharField(source="movie.title")
+    cinema_hall_name = serializers.CharField(source="cinema_hall.name")
+    cinema_hall_capacity = serializers.CharField(
+        source="cinema_hall.capacity", read_only=True
+    )
+
+    class Meta:
+        model = MovieSession
+        fields = (
+            "id",
+            "show_time",
+            "movie_title",
+            "cinema_hall_name",
+            "cinema_hall_capacity",
+        )
+
+
+class MovieSessionDetailSerializer(serializers.ModelSerializer):
+    movie = MovieDetailSerializer(read_only=True)
+    cinema_hall = CinemaHallSerializer(read_only=True)
+
+    class Meta:
+        model = MovieSession
+        fields = (
+            "id",
+            "show_time",
+            "movie",
+            "cinema_hall",
         )
